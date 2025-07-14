@@ -7,8 +7,9 @@ class User(Base):
     username = Column(String(30),unique=True)
     # email = Column(String,unique=True)
     password = Column(String(100))
+    role= Column(String(10))
 
-class event(Base):
+class Event(Base):
     __tablename__ = 'events'
     id = Column(Integer,primary_key=True)
     name = Column(String(50))
@@ -27,7 +28,6 @@ class Slot(Base):
     id = Column(Integer,primary_key=True)
     start_time = Column(String(20))
     end_time = Column(String(20))
-    MAX_PARTY_Size= Column(Integer)
 
 class TableReservation(Base):
     __tablename__ = 'tablereservations'
@@ -35,6 +35,7 @@ class TableReservation(Base):
     table_id = Column(Integer)
     slot_id = Column(Integer)
     capacity = Column(Integer)
+    user_id = Column(Integer)
 
 class EventReservation(Base):
     __tablename__ = 'eventreservations'
@@ -42,5 +43,7 @@ class EventReservation(Base):
     table_id = Column(Integer)
     event_id = Column(Integer)
     capacity = Column(Integer)
+    user_id = Column(Integer)
+                      
 
 

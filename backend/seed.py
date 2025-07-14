@@ -1,0 +1,48 @@
+from faker import Faker
+from sqlalchemy.orm import Session
+from database import SessionLocal
+import models
+import random
+from datetime import datetime, timedelta
+
+fake = Faker()
+db: Session = SessionLocal()
+
+for i in range(5):
+    user = models.User(
+        username=fake.user_name(),
+        password=fake.password(), 
+        role= "admin" if i==4 else "user"
+    )
+    db.add(user)
+
+for i in range(20):
+    table = models.Table(
+        table_no =i + 1,
+        capacity=random.choice([i for i in range(5,10)])
+    )
+    db.add(table)
+
+base_time = datetime.now().replace(minute=0, second=0, microsecond=0)
+for i in range(3):
+    for j in range(10):
+        slot_time = base_time + timedelta(days=base_time.day+ i, hours=j+12)
+        slot = models.Slot(
+            start_time=slot_time,
+            end_time=slot_time + timedelta(hours=1)
+        )
+        db.add(slot)
+
+for i in range(4):
+    events = models.Event(
+    name = fake.name(),
+    description =   fake.text(),
+    date =  fake.date(),
+    capacity = random.choice([i for i in range(20,40)]),
+
+    )
+    db.add(events)
+
+
+db.commit()
+db.close()
