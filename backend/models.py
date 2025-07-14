@@ -12,10 +12,11 @@ class User(Base):
 class Event(Base):
     __tablename__ = 'events'
     id = Column(Integer,primary_key=True)
-    name = Column(String(50))
+    name = Column(String(50),unique=True)
     description = Column(String(200))
     date = Column(String(20))
     capacity = Column(Integer)
+    remaining_capacity = Column(Integer)
 
 class Table(Base):
     __tablename__ = 'tables'
@@ -40,9 +41,7 @@ class TableReservation(Base):
 class EventReservation(Base):
     __tablename__ = 'eventreservations'
     id = Column(Integer,primary_key=True)
-    table_id = Column(Integer)
     event_id = Column(Integer)
-    capacity = Column(Integer)
     user_id = Column(Integer)
                       
 
