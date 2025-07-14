@@ -6,10 +6,15 @@ class User(BaseModel):
     password:str
     role:str
 
+
 class UserReduced(BaseModel):
     username:str
     role:str
     id:int
+
+class  UserRegister(BaseModel):
+    username:str
+    password:str
 
 class Table(BaseModel):
     table_no:int

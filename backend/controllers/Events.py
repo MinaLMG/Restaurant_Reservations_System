@@ -41,14 +41,14 @@ async def createEvent(event:Event,db:db_dependency,current_user: UserReduced = D
 
 # GET /events
 @router.get("/events",status_code=status.HTTP_200_OK)
-async def getEvents(db:db_dependency):
-    events=db.query(models.User).all()
+async def getEvents(db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+    events=db.query(models.Event).all()
     return events
 
 # POST /events/{id}/rsvp
 @router.post("/events/{id}/rsvp",status_code=status.HTTP_201_CREATED)
-async def rsvpEvent(id:int,db:db_dependency):
-    user_id=1
+async def rsvpEvent(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+    user_id=current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     if not user:
         raise HTTPException(status_code=400,detail="User not found")
@@ -75,8 +75,8 @@ async def rsvpEvent(id:int,db:db_dependency):
 
 # DELETE /events/{id}/rsvp
 @router.delete("/events/{id}/rsvp",status_code=status.HTTP_200_OK)
-async def deleteRSVP(id:int,db:db_dependency):
-    user_id=1
+async def deleteRSVP(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+    user_id=current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     if not user:
         raise HTTPException(status_code=400,detail="User not found")
@@ -99,8 +99,8 @@ async def deleteRSVP(id:int,db:db_dependency):
     
 # GET /admin/events/{id}/rsvps
 @router.get("/admin/events/{id}/rsvps",status_code=status.HTTP_200_OK)
-async def getEventRSVPs(id:int,db:db_dependency):
-    user_id=5
+async def getEventRSVPs(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+    user_id = current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     
     if not user:

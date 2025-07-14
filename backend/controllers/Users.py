@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
 from datetime import timedelta,datetime,timezone
 from  sqlalchemy.orm import Session
-from controllers.schemas import User,Token
+from controllers.schemas import User,Token,UserRegister
 from database import get_db
 from database import models 
 from passlib.context import CryptContext
@@ -61,13 +61,13 @@ async def verify_token(db:db_dependency,token: str = Depends(oauth2_scheme) ) ->
     
 # POST /auth/register:
 @router.post("/auth/register",status_code=status.HTTP_201_CREATED)
-async def creteUser(user:User,db:db_dependency):
-    db_user=db.query(models.User).filter(models.User.username==user.username).first()
+async def creteUser(user:UserRegister,db:db_dependency):
+    db_user = db.query(models.User).filter(models.User.username==user.username).first()
     if db_user:
-        raise HTTPException(status_code=400,detail="Username already exists")
-    user.role="user"
-    user.password=get_password_hash(user.password)
-    db_user=models.User(**user.model_dump())
+        raise HTTPException(status_code=400, detail="Username already exists")
+    userToSave= User( **user.model_dump(),role="user")   
+    userToSave.password=get_password_hash(user.password)
+    db_user=models.User(**userToSave.model_dump())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
