@@ -1,51 +1,20 @@
 from fastapi import FastAPI,HTTPException,Depends,status
 # from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from pydantic import BaseModel,Field
-import models
+import database.models as models
 from typing import Annotated
 from database import SessionLocal,engine
 from sqlalchemy.orm import Session
 from datetime import datetime
+from  controllers import TableReservations
+from database import get_db
+from    controllers.schemas import User,Event
 
 app=FastAPI()
-models.Base.metadata.create_all(bind=engine)
 
-class User(BaseModel):
-    username:str
-    password:str
-    role:str
-
-class Table(BaseModel):
-    table_no:int
-    capacity:int =Field(gt=0) 
-
-class slot(BaseModel):
-    start_time :str
-    end_time :str
-
-class TableReservation(BaseModel):
-    table_id :int
-    slot_id :int
-    capacity :int =Field(gt=0)
-    user_id : int | None = None
-
-class Event(BaseModel):
-    name :str
-    description :str
-    date :str
-    capacity :int =Field(gt=0)
-    remaining_capacity :int
-
-class EventReservation(BaseModel):
-    event_id :int
-    user_id : int | None = None
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db 
-    finally:
-        db.close()
+# app.include_router(user.router)
+app.include_router(TableReservations.router)
+# app.include_router(event.router)
 
 db_dependency=Annotated[Session, Depends( get_db)]
 
@@ -55,6 +24,8 @@ async def creteUser(user:User,db:db_dependency):
     db_user=models.User(**user.model_dump())
     db.add(db_user)
     db.commit()
+    db.refresh(db_user)
+    return {"message":"User created","user":db_user}
     
 @app.get("/",status_code=status.HTTP_200_OK)
 async def getHome():
@@ -62,78 +33,6 @@ async def getHome():
         "message":"Welcome to the Restaurant Reservation System"
     }
 
-# POST /reservations
-@app.post("/reservations",status_code=status.HTTP_201_CREATED)
-async def createReservation(reservation:TableReservation,db:db_dependency):    
-    reservation.user_id=1
-    
-    #checking both the slot and table exist and not rserved at this slot
-    db_table=db.query(models.Table).filter(models.Table.id==reservation.table_id).first()
-    if not db_table:
-        raise HTTPException(status_code=400,detail="Table not found")
-    
-    db_slot=db.query(models.Slot).filter(models.Slot.id==reservation.slot_id).first()
-    if not db_slot:
-        raise HTTPException(status_code=400,detail="Slot not found")
-    
-    db_reservation=db.query(models.TableReservation).filter(models.TableReservation.table_id==reservation.table_id,models.TableReservation.slot_id==reservation.slot_id).first()
-    if db_reservation:
-        raise HTTPException(status_code=400,detail="The table is already reserved at this slot")
-    
-    
-    if(reservation.capacity>db_table.capacity):
-        raise HTTPException(status_code=400,detail="The table capacity is not enough")
-    
-    if(reservation.capacity<=0):
-        raise HTTPException(status_code=400,detail="The capacity is not a valid number")
-    
-
-    db_user_reserved_in_same_slot = (
-        db.query(models.TableReservation)
-        .filter(models.TableReservation.slot_id == reservation.slot_id,
-                models.TableReservation.user_id == reservation.user_id) 
-        .first())
-
-    if db_user_reserved_in_same_slot:
-        raise HTTPException(
-        status_code=400,
-        detail="You have already reserved a table at this slot")
-    
-    db_reservation=models.TableReservation(**reservation.model_dump())
-
-    db.add(db_reservation)
-    db.commit()
-
-# GET /reservations
-@app.get("/reservations",status_code=status.HTTP_200_OK)
-async def getReservations(db:db_dependency):    
-    user_id=1
-    db_reservations=db.query(models.TableReservation).filter(models.TableReservation.user_id==user_id).all()
-    return db_reservations
-
-# DELETE /reservations/{id}
-@app.delete("/reservations/{id}",status_code=status.HTTP_200_OK)
-async def deleteReservation(id:int,db:db_dependency):    
-    user_id=1
-    db_reservation=db.query(models.TableReservation).filter(models.TableReservation.id==id,models.TableReservation.user_id==user_id).first()
-    if not db_reservation:
-        raise HTTPException(status_code=400,detail="Reservation not found")
-    db.delete(db_reservation)
-    db.commit()
-    return {"message":"Reservation deleted",
-            "reservation":db_reservation}    
-
-# GET /admin/reservations
-@app.get("/admin/reservations",status_code=status.HTTP_200_OK)
-async def getAdminReservations(db:db_dependency):
-    user_id=5
-    user=db.query(models.User).filter(models.User.id==user_id).first()
-    if not user:
-        raise HTTPException(status_code=400,detail="User not found")
-    if(user.role!="admin"):
-        raise HTTPException(status_code=400,detail="You are not an admin")    
-    db_reservations=db.query(models.TableReservation).all()
-    return db_reservations
 
 # POST /events
 @app.post("/events",status_code=status.HTTP_201_CREATED)
@@ -159,6 +58,7 @@ async def createEvent(event:Event,db:db_dependency):
     db_event=models.Event(**event.model_dump())
     db.add(db_event)
     db.commit()
+    db.refresh(db_event)
     return {"message":"Event created",
             "event":db_event}
 

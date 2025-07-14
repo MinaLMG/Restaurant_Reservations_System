@@ -1,7 +1,7 @@
 from faker import Faker
 from sqlalchemy.orm import Session
 from database import SessionLocal
-import models
+import backend.database.models as models
 import random
 from datetime import datetime, timedelta
 
