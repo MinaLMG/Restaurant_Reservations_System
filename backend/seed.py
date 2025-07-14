@@ -1,20 +1,29 @@
-from faker import Faker
-from sqlalchemy.orm import Session
-from database import SessionLocal
-import backend.database.models as models
-import random
-from datetime import datetime, timedelta
+from    faker import Faker
+from    sqlalchemy.orm import Session
+from    database import SessionLocal
+import  database.models as models
+import  random
+from    datetime import datetime, timedelta
+from    passlib.context import CryptContext
+from    database import Base
 
 fake = Faker()
-db: Session = SessionLocal()
 
-for i in range(5):
-    user = models.User(
-        username=fake.user_name(),
-        password=fake.password(), 
-        role= "admin" if i==4 else "user"
-    )
-    db.add(user)
+from database import engine
+
+Base.metadata.create_all(bind=engine)
+
+db: Session = SessionLocal()    
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# for i in range(5):
+#     user = models.User(
+#         username=fake.user_name(),
+#         password=pwd_context.hash( fake.password()), 
+#         role= "admin" if i==4 else "user"
+#     )
+#     db.add(user)
 
 for i in range(20):
     table = models.Table(

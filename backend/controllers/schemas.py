@@ -6,6 +6,11 @@ class User(BaseModel):
     password:str
     role:str
 
+class UserReduced(BaseModel):
+    username:str
+    role:str
+    id:int
+
 class Table(BaseModel):
     table_no:int
     capacity:int =Field(gt=0) 
@@ -32,3 +37,7 @@ class Event(BaseModel):
 class EventReservation(BaseModel):
     event_id :int
     user_id : int | None = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
