@@ -116,6 +116,31 @@ async def getEventRSVPs(id:int,db:db_dependency,current_user: UserReduced = Depe
     db_event_reservations=db.query(models.EventReservation).filter(models.EventReservation.event_id==id).all()
     return db_event_reservations
 
+# GET /events/me
+@router.get("/events/me", status_code=status.HTTP_200_OK)
+async def getUserEventReservations(db: db_dependency, current_user: UserReduced = Depends(verify_token)):
+    user_id = current_user.id
+    
+    # Get user's event reservations with event details
+    reservations = (
+        db.query(models.EventReservation, models.Event)
+        .join(models.Event, models.EventReservation.event_id == models.Event.id)
+        .filter(models.EventReservation.user_id == user_id)
+        .all()
+    )
+    
+    return [
+        {
+            "id": reservation.id,
+            "event_id": reservation.event_id,
+            "title": event.name, 
+            "description": event.description,
+            "event_date": event.date, 
+            "capacity": event.capacity
+        }
+        for reservation, event in reservations
+    ]
+
 
 
 

@@ -28,7 +28,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 for i in range(20):
     table = models.Table(
-        table_no =i + 1,
+        table_no =  i + 1,
         capacity=random.choice([i for i in range(5,10)])
     )
     db.add(table)
@@ -44,7 +44,7 @@ for i in range(3):
         db.add(slot)
 
 for i in range(4):
-    cap=  random.choice([i for i in range(20,40)])
+    cap=  random.choice([j for j in range(20,40)])
     events = models.Event(
     name = fake.name(),
     description =   fake.text(),

@@ -86,3 +86,32 @@ async def getAdminReservations(db:db_dependency,current_user: UserReduced = Depe
         raise HTTPException(status_code=400,detail="You are not an admin")    
     db_reservations=db.query(models.TableReservation).all()
     return db_reservations
+
+
+# GET /user/reservations
+@router.get("/user/reservations", status_code=status.HTTP_200_OK)
+async def getUserReservations(db: db_dependency, current_user: UserReduced = Depends(verify_token)):
+    reservations = (
+        db.query(
+            models.TableReservation,
+            models.Table,
+            models.Slot
+        )
+        .join(models.Table, models.TableReservation.table_id == models.Table.id)
+        .join(models.Slot, models.TableReservation.slot_id == models.Slot.id)
+        .filter(models.TableReservation.user_id == current_user.id)
+        .all()
+    )
+    
+    return [
+        {
+            "id": res.id,
+            "table_id": res.table_id,
+            "slot_id": res.slot_id,
+            "capacity": res.capacity,
+            "table_no": res.table_no,
+            "start_time": res.start_time,
+            "end_time": res.end_time
+        }
+        for res in reservations
+    ]
