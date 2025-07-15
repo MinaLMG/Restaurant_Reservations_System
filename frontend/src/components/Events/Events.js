@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Users, Plus, Eye } from "lucide-react";
+import { Calendar, Clock, Users, Plus, X, Trash2, Eye } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
+import "./Events.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 

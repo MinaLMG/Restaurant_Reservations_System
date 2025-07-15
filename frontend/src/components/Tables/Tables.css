@@ -426,7 +426,7 @@
 
 .form-group input {
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 0 8px 40px;
     border: 1px solid #ddd;
     border-radius: 6px;
 }
@@ -494,4 +494,28 @@
 .table-option:hover {
     background: #f8f9fa;
     border-color: #007bff;
+}
+
+.slot-option.chosen,
+.table-option.chosen {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.slot-option.chosen:hover,
+.table-option.chosen:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.reserved-label {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
 }

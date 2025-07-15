@@ -1,10 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Table, Clock, Users, Trash2 } from "lucide-react";
+import "./Tables.css";
 
 const ReservationCard = ({ reservation, onCancel }) => {
-    const formatTime = (timeString) => {
-        return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
+    const formatTime = (dateTimeString) => {
+        return new Date(dateTimeString).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
         });

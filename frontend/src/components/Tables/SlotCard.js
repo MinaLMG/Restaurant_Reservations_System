@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Clock, Table, Users } from "lucide-react";
+import "./Tables.css";
 
 const SlotCard = ({ slot, tables, onReserve, userReservations }) => {
     const availableTables = tables.filter(
@@ -10,8 +11,8 @@ const SlotCard = ({ slot, tables, onReserve, userReservations }) => {
             )
     );
 
-    const formatTime = (timeString) => {
-        return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
+    const formatTime = (dateTimeString) => {
+        return new Date(dateTimeString).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
         });

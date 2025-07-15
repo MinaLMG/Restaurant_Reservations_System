@@ -93,9 +93,13 @@ async def getAdminReservations(db:db_dependency,current_user: UserReduced = Depe
 async def getUserReservations(db: db_dependency, current_user: UserReduced = Depends(verify_token)):
     reservations = (
         db.query(
-            models.TableReservation,
-            models.Table,
-            models.Slot
+            models.TableReservation.id,
+            models.TableReservation.table_id,
+            models.TableReservation.slot_id,
+            models.TableReservation.capacity,
+            models.Table.table_no,
+            models.Slot.start_time,
+            models.Slot.end_time
         )
         .join(models.Table, models.TableReservation.table_id == models.Table.id)
         .join(models.Slot, models.TableReservation.slot_id == models.Slot.id)

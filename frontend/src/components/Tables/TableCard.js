@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Table, Users, Clock, CheckCircle } from "lucide-react";
+import "./Tables.css";
 
 const TableCard = ({ table, slots, onReserve, userReservations }) => {
     const isReserved = userReservations.some(

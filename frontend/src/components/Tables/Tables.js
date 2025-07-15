@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import TableCard from "./TableCard";
 import SlotCard from "./SlotCard";
 import ReservationCard from "./ReservationCard";
+import "./Tables.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -123,7 +124,7 @@ const Tables = () => {
                                 onClick={() => setActiveTab("tables")}
                             >
                                 <Table size={20} />
-                                Browse Tables
+                                Make a Reservation
                             </button>
                             <button
                                 className={`tab ${
@@ -280,8 +281,10 @@ const ReservationModal = ({ table, slot, onClose, onSubmit }) => {
         });
     };
 
-    const formatTime = (timeString) => {
-        return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
+    const formatDateTime = (dateTimeString) => {
+        return new Date(dateTimeString).toLocaleString([], {
+            month: "short",
+            day: "numeric",
             hour: "2-digit",
             minute: "2-digit",
         });
@@ -301,8 +304,8 @@ const ReservationModal = ({ table, slot, onClose, onSubmit }) => {
                         <Table size={16} /> Table {table.table_no}
                     </p>
                     <p>
-                        <Clock size={16} /> {formatTime(slot.start_time)} -{" "}
-                        {formatTime(slot.end_time)}
+                        <Clock size={16} /> {formatDateTime(slot.start_time)} -{" "}
+                        {formatDateTime(slot.end_time)}
                     </p>
                     <p>
                         <Users size={16} /> Max capacity: {table.capacity}
@@ -339,15 +342,10 @@ const SlotSelectionModal = ({
     onClose,
     onSelectSlot,
 }) => {
-    const availableSlots = slots.filter(
-        (slot) =>
-            !userReservations.some(
-                (res) => res.table_id === table.id && res.slot_id === slot.id
-            )
-    );
-
-    const formatTime = (timeString) => {
-        return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
+    const formatDateTime = (dateTimeString) => {
+        return new Date(dateTimeString).toLocaleString([], {
+            month: "short",
+            day: "numeric",
             hour: "2-digit",
             minute: "2-digit",
         });
@@ -363,22 +361,36 @@ const SlotSelectionModal = ({
                     </button>
                 </div>
                 <div className="slots-list">
-                    {availableSlots.map((slot) => (
-                        <div
-                            key={slot.id}
-                            className="slot-option"
-                            onClick={() => onSelectSlot(slot)}
-                        >
-                            <Clock size={16} />
-                            <span>
-                                {formatTime(slot.start_time)} -{" "}
-                                {formatTime(slot.end_time)}
-                            </span>
-                        </div>
-                    ))}
-                    {availableSlots.length === 0 && (
-                        <p>No available time slots for this table.</p>
-                    )}
+                    {slots.map((slot) => {
+                        const isReserved = userReservations.some(
+                            (res) =>
+                                res.table_id === table.id &&
+                                res.slot_id === slot.id
+                        );
+
+                        return (
+                            <div
+                                key={slot.id}
+                                className={`slot-option ${
+                                    isReserved ? "chosen" : ""
+                                }`}
+                                onClick={() =>
+                                    !isReserved && onSelectSlot(slot)
+                                }
+                            >
+                                <Clock size={16} />
+                                <span>
+                                    {formatDateTime(slot.start_time)} -{" "}
+                                    {formatDateTime(slot.end_time)}
+                                </span>
+                                {isReserved && (
+                                    <span className="reserved-label">
+                                        Reserved
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
@@ -392,15 +404,10 @@ const TableSelectionModal = ({
     onClose,
     onSelectTable,
 }) => {
-    const availableTables = tables.filter(
-        (table) =>
-            !userReservations.some(
-                (res) => res.table_id === table.id && res.slot_id === slot.id
-            )
-    );
-
-    const formatTime = (timeString) => {
-        return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
+    const formatDateTime = (dateTimeString) => {
+        return new Date(dateTimeString).toLocaleString([], {
+            month: "short",
+            day: "numeric",
             hour: "2-digit",
             minute: "2-digit",
         });
@@ -411,29 +418,44 @@ const TableSelectionModal = ({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>
-                        Select Table for {formatTime(slot.start_time)} -{" "}
-                        {formatTime(slot.end_time)}
+                        Select Table for {formatDateTime(slot.start_time)} -{" "}
+                        {formatDateTime(slot.end_time)}
                     </h2>
                     <button onClick={onClose}>
                         <X size={24} />
                     </button>
                 </div>
                 <div className="tables-list">
-                    {availableTables.map((table) => (
-                        <div
-                            key={table.id}
-                            className="table-option"
-                            onClick={() => onSelectTable(table)}
-                        >
-                            <Table size={16} />
-                            <span>
-                                Table {table.table_no} (Seats {table.capacity})
-                            </span>
-                        </div>
-                    ))}
-                    {availableTables.length === 0 && (
-                        <p>No available tables for this time slot.</p>
-                    )}
+                    {tables.map((table) => {
+                        const isReserved = userReservations.some(
+                            (res) =>
+                                res.table_id === table.id &&
+                                res.slot_id === slot.id
+                        );
+
+                        return (
+                            <div
+                                key={table.id}
+                                className={`table-option ${
+                                    isReserved ? "chosen" : ""
+                                }`}
+                                onClick={() =>
+                                    !isReserved && onSelectTable(table)
+                                }
+                            >
+                                <Table size={16} />
+                                <span>
+                                    Table {table.table_no} (Seats{" "}
+                                    {table.capacity})
+                                </span>
+                                {isReserved && (
+                                    <span className="reserved-label">
+                                        Reserved
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
