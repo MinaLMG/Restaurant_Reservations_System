@@ -1,0 +1,7 @@
+# creating container
+
+docker build --network=host -t rrs-frontend:1.0 .
+
+# running container
+
+docker run -d -p 3000:3000 --name front1 --env-file .env  rrs-frontend:1.0

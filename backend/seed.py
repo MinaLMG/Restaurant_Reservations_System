@@ -6,7 +6,13 @@ import  random
 from    datetime import datetime, timedelta
 from    passlib.context import CryptContext
 from    database import Base
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+Adname=os.getenv("ADMIN_NAME")
+Adpass=os.getenv("ADMIN_PASSWORD")
 fake = Faker()
 
 from database import engine
@@ -24,6 +30,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #         role= "admin" if i==4 else "user"
 #     )
 #     db.add(user)
+
+user = models.User(
+    username=Adname,
+    password=pwd_context.hash(Adpass), 
+    role= "admin" 
+)
+db.add(user)
 
 
 for i in range(20):

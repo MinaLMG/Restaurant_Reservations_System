@@ -1,0 +1,6 @@
+# creating container
+
+docker run -d --name db --network rrs-net -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=rrsdb   -p 3307:3306  mysql:8
+
+# env file for backend
+DATABASE_URL=mysql+pymysql://root:root@db:3306/rrsdb

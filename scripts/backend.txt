@@ -1,0 +1,11 @@
+## creating container
+
+docker build --network=host -t rrs-backend:1.0 .      
+
+## seeding 
+
+docker run --rm --network rrs-net --env-file .env2 rrs-backend:1.0 python seed.py
+
+## running container
+
+ docker run --network=rrs-net -p 8000:8000 --env-file .env2 rrs-backend:1.0
