@@ -1,0 +1,37 @@
+services:
+  compose-db:
+    image: mysql:8
+    container_name: compose-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rrsdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 30  # Increased retries
+      start_period: 60s
+      
+  compose-backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      compose-db: { condition: service_healthy }
+    
+  
+  compose-frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      compose-backend: { condition: service_started }
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:

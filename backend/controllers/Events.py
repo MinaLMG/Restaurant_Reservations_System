@@ -5,7 +5,7 @@ from  sqlalchemy.orm import Session
 from database import get_db
 from database import models 
 from controllers.schemas import Event,UserReduced
-from controllers.Users import verify_token
+from controllers.users import verify_token
 
 router =APIRouter(prefix="", tags=["Events"])
 
@@ -13,7 +13,7 @@ db_dependency = Annotated[Session,Depends(get_db)]
 
 # POST /events
 @router.post("/events",status_code=status.HTTP_201_CREATED)
-async def createEvent(event:Event,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def create_event(event:Event,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     user_id= current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     if not user:
@@ -41,13 +41,13 @@ async def createEvent(event:Event,db:db_dependency,current_user: UserReduced = D
 
 # GET /events
 @router.get("/events",status_code=status.HTTP_200_OK)
-async def getEvents(db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def get_events(db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     events=db.query(models.Event).all()
     return events
 
 # POST /events/{id}/rsvp
 @router.post("/events/{id}/rsvp",status_code=status.HTTP_201_CREATED)
-async def rsvpEvent(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def rsvp_event(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     user_id=current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     if not user:
@@ -75,7 +75,7 @@ async def rsvpEvent(id:int,db:db_dependency,current_user: UserReduced = Depends(
 
 # DELETE /events/{id}/rsvp
 @router.delete("/events/{id}/rsvp",status_code=status.HTTP_200_OK)
-async def deleteRSVP(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def delete_RSVP(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     user_id=current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     if not user:
@@ -99,7 +99,7 @@ async def deleteRSVP(id:int,db:db_dependency,current_user: UserReduced = Depends
     
 # GET /admin/events/{id}/rsvps
 @router.get("/admin/events/{id}/rsvps",status_code=status.HTTP_200_OK)
-async def getEventRSVPs(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def get_eventRSVPs(id:int,db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     user_id = current_user.id
     user=db.query(models.User).filter(models.User.id==user_id).first()
     
@@ -118,7 +118,7 @@ async def getEventRSVPs(id:int,db:db_dependency,current_user: UserReduced = Depe
 
 # GET /events/me
 @router.get("/events/me", status_code=status.HTTP_200_OK)
-async def getUserEventReservations(db: db_dependency, current_user: UserReduced = Depends(verify_token)):
+async def get_user_event_reservations(db: db_dependency, current_user: UserReduced = Depends(verify_token)):
     user_id = current_user.id
     
     # Get user's event reservations with event details

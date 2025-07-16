@@ -48,7 +48,6 @@ const Dashboard = () => {
                             style={{
                                 border: "1px solid #ccc",
                                 borderRadius: "3%",
-                                borderLeft: "none",
                             }}
                         >
                             <Link to={card.link} className="dashboard-card">

@@ -18,7 +18,7 @@ class Table(BaseModel):
     table_no: int
     capacity: int = Field(gt=0) 
 
-class slot(BaseModel):
+class Slot(BaseModel):
     start_time: str
     end_time: str
 

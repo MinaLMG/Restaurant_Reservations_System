@@ -61,7 +61,7 @@ async def verify_token(db:db_dependency,token: str = Depends(oauth2_scheme) ) ->
     
 # POST /auth/register:
 @router.post("/auth/register",status_code=status.HTTP_201_CREATED)
-async def creteUser(user:UserRegister,db:db_dependency):
+async def crete_user(user:UserRegister,db:db_dependency):
     db_user = db.query(models.User).filter(models.User.username==user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already exists")
@@ -94,7 +94,7 @@ async def login_for_access_token(db:db_dependency ,
 
 # GET /users/me
 @router.get("/users/me",status_code=status.HTTP_200_OK)
-async def getMe(db:db_dependency,current_user: UserReduced = Depends(verify_token)):
+async def get_me(db:db_dependency,current_user: UserReduced = Depends(verify_token)):
     user=db.query(models.User).filter(models.User.username==current_user.username).first()
     del user.password
     return user

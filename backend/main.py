@@ -1,4 +1,4 @@
-from controllers import TableReservations, Users, Events, Other
+from controllers import table_reservations,users,events,others
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,10 +19,10 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-app.include_router(Users.router)
-app.include_router(TableReservations.router)
-app.include_router(Events.router)
-app.include_router(Other.router)
+app.include_router(users.router)
+app.include_router(table_reservations.router)
+app.include_router(events.router)
+app.include_router(others.router)
 
 
 
